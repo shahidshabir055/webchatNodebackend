@@ -1,4 +1,3 @@
-import res from "express/lib/response";
 import mongoose from "mongoose";
 import { ContactSchema } from "../models/crmModels";
 

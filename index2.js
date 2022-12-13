@@ -1,32 +1,28 @@
-import { createServer } from "http";
-import { Server } from "socket.io";
+import express from 'express';
+import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
+import routes from './src/routes/crmRoutes.js';
 
-const httpServer = createServer();
-const io = new Server(httpServer, {
-  cors: {
-    origin: "http://localhost:4200",
-    // or with an array of origins
-    // origin: ["https://my-frontend.com", "https://my-other-frontend.com", "http://localhost:3000"],
-  }
+const app = express();
+const PORT = 3000;
+
+// mongoose connection
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost/CRMdb',{
+    useNewUrlParser: true
 });
 
-// Listen for new connection and print a message in console 
-httpServer.listen(3000)
-io.on('connection', (socket) => {
-    console.log(`New connection ${socket.id}`)
-    // Listening for chat event
-    socket.on('chat', function(data){
-        // console.log('chat event trigged at server');
-        // console.log('need to notify all the clients about this event');
-        io.sockets.emit('chat', data);
-    });
+//bodyparser setup
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-    // Listening for typing event
-    socket.on('typing', function(data){
-        // console.log(`Server received ${data} is typing`);
-        // console.log('need to inform all the clients about this');
-        io.sockets.emit('typing', data);
-        //socket.broadcast.emit('typing', data);
-    });
 
-});
+routes(app);
+
+app.get('/', (req, res) => 
+    res.send(`Node and express server is running on port ${PORT}`)
+);
+
+app.listen(PORT, () => 
+    console.log(`Your server is running on port ${PORT}`)
+);

@@ -36,5 +36,3 @@ io.on('connection', (socket) => {
   });
 
 });
-
-
